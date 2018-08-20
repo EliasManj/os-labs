@@ -1,0 +1,1 @@
+cmd_/root/Documents/Sistemas_Operativos/os-labs/lab1.4/simple.ko := ld -r -m elf_x86_64 -T /usr/src/linux-headers-4.15.0-kali2-common/scripts/module-common.lds --build-id  -o /root/Documents/Sistemas_Operativos/os-labs/lab1.4/simple.ko /root/Documents/Sistemas_Operativos/os-labs/lab1.4/simple.o /root/Documents/Sistemas_Operativos/os-labs/lab1.4/simple.mod.o ;  true
