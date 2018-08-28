@@ -1,0 +1,13 @@
+#!/bin/sh
+
+dir="$PWD"
+echo "$dir" > linux_source_structure.txt
+echo ".c source code files" >> linux_source_structure.txt
+find ../../../linux/ -mindepth 1 -maxdepth 2 -type f -name \*.c >> linux_source_structure.txt
+echo "- .h header files" >> linux_source_structure.txt
+find ../../../linux/ -mindepth 1 -maxdepth 2 -type f -name \*.h >> linux_source_structure.txt
+echo "- Second level directories" >> linux_source_structure.txt
+echo " - .c source code files" >> linux_source_structure.txt
+find ../../../linux/ -mindepth 3 -maxdepth 3 -type f -name \*.c >> linux_source_structure.txt
+echo " - .h header files" >> linux_source_structure.txt
+find ../../../linux/ -mindepth 3 -maxdepth 3 -type f -name \*.h >> linux_source_structure.txt

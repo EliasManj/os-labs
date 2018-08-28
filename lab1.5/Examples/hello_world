@@ -1,0 +1,5 @@
+#!/bin/sh
+salutation="Hello world"
+echo $salutation
+sum=30+50
+echo $sum
