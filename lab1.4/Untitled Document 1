@@ -1,9 +1,0 @@
-#include<stdio.h>
-
-struct Student {
-	int ID;
-	char name[50];
-	int age;
-};
-
-struct Student students[10];
