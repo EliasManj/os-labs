@@ -11,6 +11,7 @@
 int main(void) {
 	char *args[MAX_LINE / 2 + 1]; /* command line (of 80) has max of 40 arguments */
 	char user_input[MAX_LINE];
+
 	int should_run = 1;
 	pid_t pid;
 
@@ -28,18 +29,22 @@ int main(void) {
 		}
 		args[i] = NULL;
 		char *ptr;
-		ptr = strtok(args[i-1], " \n");
+		ptr = strtok(args[i - 1], " \n");
 		while (ptr) {
 			ptr = strtok(NULL, " \n");
 		}
+		char last_str[strlen(args[i - 1])];
+		strcpy(last_str, args[i - 1]);
+		int parent_wait = strcmp(last_str, "&");
 		pid = fork();
 		if (pid == 0) {
-			printf("Excecuting command from child process\n");
 			execvp(args[0], args);
 		}
 
-		int status = 0;
-		wait(&status);
+		if (parent_wait) {
+			int status = 0;
+			wait(&status);
+		}
 
 		/**
 		 * After reading user input, the steps are:
