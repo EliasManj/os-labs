@@ -25,7 +25,8 @@ long arrB[SIZE];
 int NUM_BUFFERS;
 
 //Temp buffers
-long *buffers = { 0 };
+long *buffers;
+long result[SIZE];
 pthread_mutex_t mutexes[6];
 pthread_t threads[SIZE];
 
@@ -34,6 +35,7 @@ struct arg_struct {
 	int i;
 	int j;
 	int id;
+	long result;
 };
 
 long *readMatrix(char *filename);
@@ -53,6 +55,10 @@ int main(int argc, char *argv[]) {
 	//Check NUM_BUFFERS
 	printf("%s\n", argv[0]);
 	NUM_BUFFERS = atoi(argv[1]);
+	buffers = malloc(NUM_BUFFERS * sizeof(buffers[0]));
+	for (i = 0; i < NUM_BUFFERS; i++) {
+		buffers[i] = 0;
+	}
 	printf("Number of BUFFERS is %d\n", NUM_BUFFERS);
 
 	//mutexes = malloc(NUM_BUFFERS * sizeof(pthread_mutex_t));
@@ -114,7 +120,6 @@ long dotProduct(long *vec1, long *vec2) {
 
 long* multiply(long *matA, long *matB) {
 	struct arg_struct args;
-	static long result[SIZE] = { 0 };
 	long dotResult;
 	int i;
 	int j;
@@ -131,7 +136,7 @@ long* multiply(long *matA, long *matB) {
 	}
 	for (join_i = 0; join_i < SIZE; join_i++) {
 		pthread_join(threads[join_i], (void**) &(dotResult));
-		result[join_i] = dotResult;
+		printf("thread %d gave %ld\n",join_i, dotResult);
 	}
 	return result;
 }
@@ -144,8 +149,8 @@ void *dotWrap(void *arguments) {
 	if (lock == -1) {
 		lock = 1;
 	}
-	pthread_mutex_lock(&mutexes[lock]);
 	buffers[lock] = dotProduct(&arrA[args->i * ROW], &arrB[args->j]);
+	result[args->i*ROW+args->j] = buffers[lock];
 	pthread_mutex_unlock(&mutexes[lock]);
 	printf("thread %d unlocked a buffer\n", args->id);
 	pthread_exit((void*) buffers[lock]);
@@ -163,4 +168,9 @@ int getLock(void) {
 	}
 	return -1;
 }
+
+int releaseLock(int lock){
+	return pthread_mutex_unlock(&mutexes[lock]);
+}
+
 
