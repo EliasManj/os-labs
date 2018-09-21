@@ -21,4 +21,5 @@ before continuing.
 ### Compile and run
 
 `gcc simple-shell.c -o simple-shell`
+
 `./simple-shell`
