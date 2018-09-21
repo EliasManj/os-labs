@@ -2,11 +2,12 @@
 
 Create a script to find all Linux kernel related .c and .h source code files. Below you can see the requirements.
 
-*Identify those paths where Linux kernel source code is located
-*Generate a script that searchs for .c and .h files in those Linux Kernel source directories.
-*Once files are found, categorize files on their first and second level directories. Also, separate them in .c and .h files on each category.
-*That categorization data will be saved in a plain text called "linux_source_structure.txt"
-*Below is an example of the final output file.
+* Identify those paths where Linux kernel source code is located
+* Generate a script that searchs for .c and .h files in those Linux Kernel source directories.
+* Once files are found, categorize files on their first and second level directories. Also, separate them in .c and .h files on each category.
+* That categorization data will be saved in a plain text called "linux_source_structure.txt"
+* Below is an example of the final output file.
+
 *Upload your code to your github repository os-labs and place it in a new directory called lab1.5, don't forget to include the README.md file with details about the lab.
 
 ```
