@@ -3,10 +3,10 @@
 #include <pthread.h>
 #include <sys/time.h>
 
-#define ROW 4
-#define COL 4
-#define SIZE 16
-#define NUM_BUFFERS 20
+#define ROW 2000
+#define COL 2000
+#define SIZE 4000000
+#define NUM_BUFFERS 40
 
 long **buffers[NUM_BUFFERS];
 pthread_mutex_t mutexes[NUM_BUFFERS];
@@ -37,10 +37,11 @@ void *row_mul(void *args);
 long *test(void);
 
 int main(void) {
-	printf("Reading files\n");
-	clock_t begin = clock();
+	printf("Reading file A\n");
 	matA = readMatrix("matA.dat");
+	printf("Reading file B\n");
 	matB = readMatrix("matB.dat");
+	clock_t begin = clock();
 	/*
 	 printMatrix(matA);
 	 printMatrix(matB);
@@ -62,6 +63,7 @@ int main(void) {
 	 result1 = dotProduct(row1, col1);
 	 */
 	long *result;
+	printf("begin multiplication");
 	result = multiply(matA, matB);
 	saveResultMatrix(result);
 
