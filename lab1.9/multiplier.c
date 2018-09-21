@@ -1,11 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
-#include <sys/time.h>
 
-#define ROW 2000
-#define COL 2000
-#define SIZE 4000000
+#define ROW 200
+#define COL 200
+#define SIZE 40000
 #define NUM_BUFFERS 40
 
 long **buffers[NUM_BUFFERS];
@@ -42,7 +41,6 @@ int main(void) {
 	printf("Reading file B\n");
 	matB = readMatrix("matB.dat");
 	printf("begin multiplication");
-	clock_t begin = clock();
 	/*
 	 printMatrix(matA);
 	 printMatrix(matB);
@@ -68,9 +66,6 @@ int main(void) {
 	result = multiply(matA, matB);
 	saveResultMatrix(result);
 
-	clock_t end = clock();
-	double time_spent = (double)(end- begin)/CLOCKS_PER_SEC;
-	printf("time spent: %lf\n", time_spent);
 	return EXIT_SUCCESS;
 }
 
