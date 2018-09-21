@@ -2,4 +2,4 @@
 
 `gcc multiplier.c -o multiplier -lpthread`
 
-`./multiplier NUM_THREADS`
+`./multiplier`
