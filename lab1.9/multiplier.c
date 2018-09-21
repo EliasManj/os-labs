@@ -1,173 +1,204 @@
-/*
- ============================================================================
- Name        : 9.c
- Author      : 
- Version     :
- Copyright   : Your copyright notice
- Description : Hello World in C, Ansi-style
- ============================================================================
- */
-
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <pthread.h>
 #include <sys/time.h>
 
-#define ROW 2000
-#define COL 2000
-#define SIZE 4000000
+#define ROW 4
+#define COL 4
+#define SIZE 16
+#define NUM_BUFFERS 20
 
-long arrA[SIZE];
-long arrB[SIZE];
+long **buffers[NUM_BUFFERS];
+pthread_mutex_t mutexes[NUM_BUFFERS];
+pthread_t threads[ROW];
+long *result;
+long *matA;
+long *matB;
 
-int NUM_BUFFERS;
-
-//Temp buffers
-long *buffers;
-long result[SIZE];
-pthread_mutex_t *mutexes;
-pthread_t threads[SIZE];
-
-//Args
-struct arg_struct {
-	int i;
-	int j;
-	int id;
-	long result;
+struct MatStruct {
+	long row;
+	long *matA_pt;
+	long *matB_pt;
+	long *result;
 };
 
 long *readMatrix(char *filename);
-long dotProduct(long *vec1, long *vec2);
-long* multiply(long *matA, long *matB);
-int getLock(void);
-void *dotWrap(void *arguments);
-int saveResultMatrix(long *result);
+void printMatrix(long *mat_pt);
+long *getColumn(int col, long *matrix);
+void printColumn(long *col);
+void printRow(long *row);
 long *getRow(int row, long *matrix);
-long *getCol(int col, long *matrix);
+int getLock(void);
 int releaseLock(int lock);
+long dotProduct(long *vec1, long *vec2);
+int saveResultMatrix(long *result);
+long *multiply(long* matA, long* matB);
+void *row_mul(void *args);
+long *test(void);
 
-int main(int argc, char *argv[]) {
+int main(void) {
+	printf("Reading files\n");
+	clock_t begin = clock();
+	matA = readMatrix("matA.dat");
+	matB = readMatrix("matB.dat");
+	/*
+	 printMatrix(matA);
+	 printMatrix(matB);
+	 //Testing
+	 long *col0;
+	 col0 = getColumn(0, matA);
+	 printColumn(col0);
+	 long *row0;
+	 row0 = getRow(0, matA);
+	 printRow(row0);
+	 long result0;
+	 result0 = dotProduct(row0, col0);
 
-	//Iteration variables
-	long *pt;
+	 long *col1;
+	 long *row1;
+	 long result1;
+	 row1 = getRow(1, matA);
+	 col1 = getColumn(1, matA);
+	 result1 = dotProduct(row1, col1);
+	 */
+	long *result;
+	result = multiply(matA, matB);
+	saveResultMatrix(result);
+
+	clock_t end = clock();
+	double time_spent = (double)(end- begin)/CLOCKS_PER_SEC;
+	printf("time spent: %lf\n", time_spent);
+	return EXIT_SUCCESS;
+}
+
+long *multiply(long *matA, long *matB) {
 	int i;
 	int j;
-	long dot;
-
-	clock_t begin = clock();
-
-	//Check NUM_BUFFERS
-	printf("%s\n", argv[0]);
-	NUM_BUFFERS = atoi(argv[1]);
-	buffers = malloc(NUM_BUFFERS * sizeof(buffers[0]));
-	for (i = 0; i < NUM_BUFFERS; i++) {
-		buffers[i] = 0;
-	}
-	mutexes = malloc(NUM_BUFFERS * sizeof(mutexes[0]));
-	for (i = 0; i < NUM_BUFFERS; i++) {
-		buffers[i] = 0;
-	}
-
-	printf("Number of BUFFERS is %d\n", NUM_BUFFERS);
-	mutexes = malloc(NUM_BUFFERS * sizeof(pthread_mutex_t));
-	for (i = 0; i < NUM_BUFFERS; i++) {
-		pthread_mutex_init(&mutexes[i], NULL);
-	}
-
-	//Read file A
-	pt = readMatrix("matA.dat");
-	for (i = 0; i < SIZE; i++) {
-		arrA[i] = *(pt + i);
-	}
-	//Read file B
-	pt = readMatrix("matB.dat");
-	for (i = 0; i < SIZE; i++) {
-		arrB[i] = *(pt + i);
-	}
+	int index;
+	int rv;
+	static long *result;
+	long *row_result_pt;
+	result = malloc(SIZE * sizeof(long));
 	for (i = 0; i < ROW; i++) {
-		for (j = 0; j < COL; j++) {
-			dot = dotProduct(&arrA[i * ROW], &arrB[j]);
-			printf("The result of in [%d][%d] is %ld\n", i, j, dot);
+		rv = pthread_create(&threads[i], NULL, &row_mul, (void *) i);
+		if (rv != 0) {
+			perror("failed to create child thread");
+			return 0;
 		}
 	}
-	long *result_p;
-	printf("Start multiplication\n");
-	result_p = multiply(arrA, arrB);
-	clock_t end = clock();
-	double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-	printf("time spent: %lf secs\n", time_spent);
-	return 0;
+	for (j = 0; j < ROW; j++) {
+		pthread_join(threads[j], (long *) &row_result_pt);
+		for (index = 0; index < COL; index++) {
+			*(result + ((j * COL) + index)) = *(row_result_pt + index);
+		}
+
+	}
+	return result;
+}
+
+void *row_mul(void *args) {
+	long *row;
+	long *col;
+	long *result_vec;
+	int row_n = (int) args;
+	int lock;
+	int i;
+	int index;
+	//printf("calculating row %d\n", row_n);
+	result_vec = malloc(ROW * sizeof(long));
+	row = getRow(row_n, matA);
+	lock = getLock();
+	while (lock == -1) {
+		lock = getLock();
+	}
+	buffers[lock] = &result_vec;
+	for (i = 0; i < ROW; i++) {
+		col = getColumn(i, matB);
+		*(*buffers[lock] + i) = dotProduct(row, col);
+	}
+	buffers[lock] = 0;
+	releaseLock(lock);
+	return (void *) result_vec;
+}
+
+long *test(void) {
+	long *row;
+	long *col;
+	int i;
+	long *pt;
+	pt = malloc(ROW * sizeof(long));
+	buffers[0] = &pt;
+	row = getRow(0, matA);
+	for (i = 0; i < ROW; i++) {
+		col = getColumn(i, matB);
+		*(*buffers[0] + i) = dotProduct(row, col);
+	}
+	return pt;
+}
+
+void printMatrix(long *mat_pt) {
+	int i;
+	int j;
+	for (i = 0; i < ROW; i++) {
+		for (j = 0; j < COL; j++) {
+			printf("[%d][%d] = %ld\n", i, j, *(mat_pt + (i * ROW) + j));
+		}
+	}
+}
+
+void printColumn(long *col) {
+	int j;
+	printf("[");
+	for (j = 0; j < COL; j++) {
+		printf("%d:%ld, ", j, *(col + j));
+	}
+	printf("]\n");
+}
+
+void printRow(long *row) {
+	int j;
+	printf("[");
+	for (j = 0; j < ROW; j++) {
+		printf("%d:%ld, ", j, *(row + j));
+	}
+	printf("]\n");
 }
 
 long *readMatrix(char *filename) {
 	FILE *file;
-	static long numberMatrix[SIZE] = { 0 };
 	int i;
+	long *matrix;
+	matrix = malloc(SIZE * sizeof(long));
 	file = fopen(filename, "r");
 	if (file) {
 		for (i = 0; i < SIZE; i++) {
-			fscanf(file, "%ld\n", &numberMatrix[i]);
-		}
-		for (i = 0; i < SIZE; i++) {
-			//printf("Number is: %ld\n", numberMatrix[i]);
+			fscanf(file, "%ld\n", &matrix[i]);
 		}
 		fclose(file);
 	} else {
 		return 0;
 	}
-	return numberMatrix;
+	return matrix;
 }
 
-long dotProduct(long *vec1, long *vec2) {
-	long sum = 0;
-	int i;
-	for (i = 0; i < ROW; i++) {
-		sum += vec2[i * ROW] * vec1[i];
-	}
-	return sum;
-}
-
-long* multiply(long *matA, long *matB) {
-	struct arg_struct args;
-	long dotResult;
-	int i;
+long *getColumn(int col, long *matrix) {
+	static long *column;
+	column = malloc(COL * sizeof(long));
 	int j;
-	int join_i;
-	int index;
-	for (i = 0; i < ROW; i++) {
-		for (j = 0; j < COL; j++) {
-			index = ROW * i + j;
-			args.i = i;
-			args.j = j;
-			args.id = index;
-			pthread_create(&threads[index], NULL, &dotWrap, (void *) &args);
-		}
+	for (j = 0; j < COL; j++) {
+		column[j] = matrix[(j * ROW) + col];
 	}
-	for (join_i = 0; join_i < SIZE; join_i++) {
-		pthread_join(threads[join_i], (void**) &(dotResult));
-		result[join_i] = dotResult;
-		printf("thread %d gave %ld\n", join_i, dotResult);
-	}
-	saveResultMatrix(result);
-	return result;
+	return column;
 }
 
-void *dotWrap(void *arguments) {
-	struct arg_struct *args = arguments;
-	//printf("im thread %d\n", args->id);
-	int lock;
-	lock = getLock();
-	while (lock == -1) {
-		lock = getLock();
+long *getRow(int row, long *matrix) {
+	long *row_list;
+	row_list = malloc(ROW * sizeof(long));
+	int i;
+	for (i = 0; i < ROW; i++) {
+		row_list[i] = matrix[(row * ROW) + i];
 	}
-	buffers[lock] = dotProduct(&arrA[args->i * ROW], &arrB[args->j]);
-	printf("The result of in [%d][%d] is %ld from thread %d\n", args->i,
-			args->j, buffers[lock], args->id);
-	result[args->i * ROW + args->j] = buffers[lock];
-	releaseLock(lock);
-	//printf("thread %d unlocked buffer %d\n", args->id, lock);
-	pthread_exit((void*) result[args->i * ROW + args->j]);
+	return row_list;
 }
 
 int getLock(void) {
@@ -176,7 +207,6 @@ int getLock(void) {
 	for (i = 0; i < NUM_BUFFERS; i++) {
 		lock = pthread_mutex_trylock(&mutexes[i]);
 		if (lock == 0) {
-			//printf("free lock\n");
 			return i;
 		}
 	}
@@ -187,32 +217,26 @@ int releaseLock(int lock) {
 	return pthread_mutex_unlock(&mutexes[lock]);
 }
 
-long *getRow(int row, long *matrix) {
-	long *pt;
-	pt = matrix;
-	pt = pt + row;
-	return pt;
-}
-
-long *getCol(int col, long *matrix) {
-	long *pt;
-	pt = matrix;
-	for (int i = 0; i < COL; i++) {
-		pt[i] = matrix[i + col];
+long dotProduct(long *vec1, long *vec2) {
+	int i;
+	int result;
+	result = 0;
+	for (i = 0; i < ROW; i++) {
+		result += vec1[i] * vec2[i];
 	}
-	return pt;
+	return result;
 }
 
 int saveResultMatrix(long *result) {
-	printf("saving...");
-	int status;
+	printf("saving...\n");
 	FILE *f = fopen("result.dat", "w+");
 	for (int i = 0; i < SIZE; i++) {
-		printf("saving %ld...\n", result[i]);
+		//printf("saving %ld...\n", result[i]);
 		fprintf(f, "%ld\n", *(result + i));
 	}
 	fclose(f);
 
 	return 0;
 }
+
 
