@@ -41,6 +41,7 @@ int main(void) {
 	matA = readMatrix("matA.dat");
 	printf("Reading file B\n");
 	matB = readMatrix("matB.dat");
+	printf("begin multiplication");
 	clock_t begin = clock();
 	/*
 	 printMatrix(matA);
@@ -63,7 +64,7 @@ int main(void) {
 	 result1 = dotProduct(row1, col1);
 	 */
 	long *result;
-	printf("begin multiplication");
+
 	result = multiply(matA, matB);
 	saveResultMatrix(result);
 
@@ -105,8 +106,7 @@ void *row_mul(void *args) {
 	int row_n = (int) args;
 	int lock;
 	int i;
-	int index;
-	//printf("calculating row %d\n", row_n);
+	printf("calculating row %d\n", row_n);
 	result_vec = malloc(ROW * sizeof(long));
 	row = getRow(row_n, matA);
 	lock = getLock();
@@ -240,5 +240,6 @@ int saveResultMatrix(long *result) {
 
 	return 0;
 }
+
 
 
