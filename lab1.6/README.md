@@ -16,17 +16,7 @@ One technique for implementing a shell interface is to have the parent process
 first read what the user enters on the command line (in this case, cat
 prog.c), and then create a separate child process that performs the command.
 Unless otherwise specified, the parent process waits for the child to exit
-before continuing. This is similar in functionality to the new process creation
-illustrated in Figure 3.10. However, UNIX shells typically also allow the child
-process to run in the background, or concurrently. To accomplish this, we add
-an ampersand (&) at the end of the command. Thus, if we rewrite the above
-command as
-
-
-`osh> cat prog.c &`
-
-
-the parent and child processes will run concurrently.
+before continuing. 
 
 ### Compile and run
 
