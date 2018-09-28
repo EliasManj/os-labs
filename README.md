@@ -7,3 +7,4 @@ Laboratories from Operating Systems class
 * Lab 1.6 - UNIX Shell and History Feature
 * Lab 1.8 - Threads Scheduling
 * Lab 1.9 - Multithreaded Matrix Multiplication
+* Lab 4.2 - The Dinning Philosophers Problem
