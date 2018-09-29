@@ -7,7 +7,7 @@ function
 
 `pickup forks(int philosopher number)`
 
-where philosopher number identifies the number of the philosopher wishing
+where `philosopher number` identifies the number of the philosopher wishing
 to eat. When a philosopher finishes eating, she invokes
 
 `return forks(int philosopher number)`
