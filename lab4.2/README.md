@@ -5,9 +5,9 @@ To simulate both activities, have the thread sleep for a random period between
 one and three seconds. When a philosopher wishes to eat, she invokes the
 function
 
-`pickup forks(int philosopher number)`
+`pickup_forks(int philosopher_number)`
 
-where `philosopher number` identifies the number of the philosopher wishing
+where `philosopher_number` identifies the number of the philosopher wishing
 to eat. When a philosopher finishes eating, she invokes
 
-`return forks(int philosopher number)`
+`return_forks(int philosopher_number)`
