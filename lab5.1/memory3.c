@@ -11,7 +11,7 @@
 
 #define ONE_K (1024)
 
-int main3(){
+int main(){
 	char *some_memory;
 	int size_to_allocate = ONE_K;
 	int megs_obtained = 0;

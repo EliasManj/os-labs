@@ -10,7 +10,7 @@
 
 #define ONE_K (1024)
 
-int main6(){
+int main(){
 	char *some_memory;
 	int exit_code = EXIT_FAILURE;
 	some_memory = (char *)malloc(ONE_K);

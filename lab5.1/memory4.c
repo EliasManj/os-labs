@@ -12,7 +12,7 @@
 
 #define ONE_K (1024)
 
-int main4(){
+int main(){
 	char *some_memory;
 	char *scan_ptr;
 	some_memory = (char *)malloc(ONE_K);
