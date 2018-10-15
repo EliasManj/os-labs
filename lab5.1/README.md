@@ -1,5 +1,20 @@
 ### Lab 5.1 - Memory Management in Linux
 
+#### Instructions
+
+From the Beginning Linux Programming book, read chapter 7 on the Managing Memory section and do all code examples and exercises described there (Note: the book's pages are attached below). Below the requirements for this laboratory.
+
+1. Read the whole Managing Memory section and then, in your own words generated a summary and put into the README.md file of a new lab5.1 directory from your os-labs repository.
+
+2. For each of the exercises or code examples, you will generating a new C-code file. 
+
+3. In order to automate compilation, add a Makefile with the following targets:
+
+    A target for each of the *.c code files
+    An all target for compiling all *.c files
+    A clean target for cleaning from binaries or any temporal data that cas generated in compilation or execution.
+
+
 #### Memory1 - Simple Memory Allocation
 
 You allocate memory using the `malloc` call in the standard C library.
