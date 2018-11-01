@@ -30,3 +30,21 @@ Other specifics include the following:
 * 256 frames
 
 * Physical memory of 65,536 bytes (256 frames × 256-byte frame size)
+
+### Handling Page Faults
+
+The backing store is represented by the file `BACKING STORE.bin`, a binary file of size
+65,536 bytes.When a page fault occurs, you will read in a 256-byte page from the
+file BACKING STORE and store it in an available page frame in physical memory.
+For example, if a logical address with page number 15 resulted in a page fault,
+your program would read in page 15 from BACKING STORE (remember that
+pages begin at 0 and are 256 bytes in size) and store it in a page frame in
+physical memory. Once this frame is stored (and the page table and TLB are
+updated), subsequent accesses to page 15 will be resolved by either the TLB or
+the page table.
+
+
+### Test File
+We provide the file `addresses.txt`, which contains integer values representing logical addresses ranging from 0 − 65535 (the size of the virtual address space). Your program will open this file, read each logical address and translate
+it to its corresponding physical address, and output the value of the signed byte
+at the physical address
