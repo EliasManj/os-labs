@@ -72,7 +72,7 @@ if __name__ == "__main__":
         TLB.append({"page":-1, "frame": -1})
     TLB = array(TLB)
     #Main program
-    with open("test.txt", "w") as myfile:
+    with open("correct.txt", "w") as myfile:
         virtual_addresses = read_virtual_addresses(filename)
         for virtual_add in virtual_addresses:
             page_number = virtual_add&page_number_mask
