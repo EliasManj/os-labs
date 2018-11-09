@@ -9,3 +9,4 @@ Laboratories from Operating Systems class
 * Lab 1.9 - Multithreaded Matrix Multiplication
 * Lab 4.2 - The Dinning Philosophers Problem
 * Lab 5.1 - Memory Management in Linux
+* Lab 5.2 - Designing a Virtual Memory Manager
