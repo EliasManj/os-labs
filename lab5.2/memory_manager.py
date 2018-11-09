@@ -14,23 +14,6 @@ def TLB_add(TLB, page_number, frame_number):
     TLB[0]["frame"] = frame_number
     return TLB
 
-def read_virtual_addresses(filename):
-    with open(filename) as f:from numpy import array, roll
-
-#Function for TLB search
-def TLB_search(page_number):
-    for tlb_item in TLB:
-        if tlb_item["page"] == page_number:
-            return tlb_item["frame"]
-    return None
-
-#Push to TLB
-def TLB_add(TLB, page_number, frame_number):
-    TLB = roll(TLB, 1)
-    TLB[0]["page"] = page_number
-    TLB[0]["frame"] = frame_number
-    return TLB
-
 #Read 256 bytes from binary file
 def backing_store_read(page_number):
     store_add = page_number*256
