@@ -48,3 +48,7 @@ the page table.
 We provide the file `addresses.txt`, which contains integer values representing logical addresses ranging from 0 − 65535 (the size of the virtual address space). Your program will open this file, read each logical address and translate
 it to its corresponding physical address, and output the value of the signed byte
 at the physical address
+
+## Run 
+
+`python memory_manager.py`
