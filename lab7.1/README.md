@@ -1,4 +1,6 @@
-## Instructions
+### Lab 7.1 - Sockets - Calculator
+
+#### Instructions
 
 ##### Modify client1.c to support:
 
@@ -19,7 +21,7 @@ Add support to receive <operation> and list of numbers (max 10 numbers) to apply
 Supported operations will be: addition (+), subtraction (-) and multiplication (*). In case that an unknown operation was requested, server should return -99999. Client should print "unsupported operation".
 
 
-## Compile and Run
+#### Compile and Run
 
   `gcc client1.c -o client1`
   
