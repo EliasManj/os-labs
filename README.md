@@ -10,3 +10,5 @@ Laboratories from Operating Systems class
 * Lab 4.2 - The Dinning Philosophers Problem
 * Lab 5.1 - Memory Management in Linux
 * Lab 5.2 - Designing a Virtual Memory Manager
+* Lab 7.1 - Sockets - Calculator
+* Lab 7.2 - Sockets - Simple Time Server
