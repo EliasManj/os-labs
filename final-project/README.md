@@ -1,5 +1,9 @@
 ## Final Lab - Minimal example kernel for x86 architecture
 
+### Description 
+
+This lab consists on making a kernel that is written in C and x86 Assembly that outputs text to a screen
+
 ### Instructions
 
 https://wiki.osdev.org/User:Zesterer/Bare_Bones  
